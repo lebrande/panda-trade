@@ -2,10 +2,12 @@ import axios from "axios";
 
 const url = "https://api.1inch.dev/token/v1.2/8453";
 
+const apiKey = process.env._1INCH_API_KEY;
+
 export const getTokens = async () => {
   const config = {
     headers: {
-      "Authorization": "Bearer rglptHF2D3aEiNGNZfn5sUF2Nxa6wxiB"
+      "Authorization": `Bearer ${apiKey}`
     },
     params: {},
     paramsSerializer: {
