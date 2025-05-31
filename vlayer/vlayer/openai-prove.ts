@@ -11,8 +11,8 @@ import {
   writeEnvVariables,
 } from "@vlayer/sdk/config";
 
-// URL do API OpenAI
 const URL_TO_PROVE = "https://api.openai.com/v1/chat/completions";
+const PROMPT = "hello world";
 
 const config = getConfig();
 const { chain, ethClient, account, proverUrl, confirmations, notaryUrl } =
@@ -29,20 +29,23 @@ const vlayer = createVlayerClient({
   token: config.token,
 });
 
-async function generateWebProof() {
+async function generateWebProof(magicNumber: string) {
   console.log("⏳ Generating web proof...");
-  const result = await Bun.$`vlayer web-proof-fetch --notary ${notaryUrl} --url ${URL_TO_PROVE} -H "Authorization: Bearer ${process.env.OPENAI_API_KEY}" -H "Content-Type: application/json" -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "hello world"}]}'`;
+  const result = await Bun.$`vlayer web-proof-fetch --notary ${notaryUrl} --url ${URL_TO_PROVE} -H "Authorization: Bearer ${process.env.OPENAI_API_KEY}" -H "Content-Type: application/json" -d '{"model": "gpt-3.5-turbo", "messages": 
+  [{"role": "user", "content": "In first line of response return magic_number:${magicNumber} and next answer for Prompt: ${PROMPT}"}]}'`;
   return result.stdout.toString();
 }
 
-async function main() {
   console.log("⏳ Deploying contracts...");
+
+  const initialMagicNumber = Math.random().toString(36).substring(2, 8);
+  console.log("Initial Magic Number:", initialMagicNumber);
 
   const { prover, verifier } = await deployVlayerContracts({
     proverSpec,
     verifierSpec,
     proverArgs: [],
-    verifierArgs: ["hello world"],
+    verifierArgs: [initialMagicNumber],
   });
 
   await writeEnvVariables(".env", {
@@ -52,7 +55,7 @@ async function main() {
 
   console.log("✅ Contracts deployed", { prover, verifier });
 
-  const webProof = await generateWebProof();
+  const webProof = await generateWebProof(initialMagicNumber);
 
   console.log("⏳ Proving...");
   const hash = await vlayer.prove({
@@ -70,7 +73,9 @@ async function main() {
   const result = await vlayer.waitForProvingResult({ hash });
   const [proof, response] = result;
   console.log("✅ Proof generated");
-  console.log("OpenAI Response:", response);
+  console.log("OpenAI Response:", response.content);
+  console.log("Model:", response.model);
+  console.log("ID:", response.id);
 
   console.log("⏳ Verifying...");
 
@@ -102,13 +107,17 @@ async function main() {
 
   console.log("✅ Verified!");
 
-  const promptMatch = await ethClient.readContract({
+  const responseValid = await ethClient.readContract({
     address: verifier,
     abi: verifierSpec.abi,
-    functionName: "checkPromptMatch",
+    functionName: "isResponseValid",
   });
 
-  console.log("Prompt match result:", promptMatch);
-}
+  const magicNumber= await ethClient.readContract({
+    address: verifier,
+    abi: verifierSpec.abi,
+    functionName: "magicNumber",
+  });
 
-main().catch(console.error); 
+  console.log("Response validation result:", responseValid);
+  console.log("Magic Number:", magicNumber);
