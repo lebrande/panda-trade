@@ -1,12 +1,11 @@
-import { base, mainnet } from "viem/chains";
+import { baseWithBlockscout } from "@/lib/blockscout";
 
-const PANDA_CHAINS = [mainnet, base] as const;
+const PANDA_CHAINS = [baseWithBlockscout] as const;
 
 export type PandaChain = (typeof PANDA_CHAINS)[number];
 
 export const CHAIN_IDS_PANDA = [
-  mainnet.id,
-  base.id,
+  baseWithBlockscout.id,
 ] as const;
 
 export type ChainIdPanda = (typeof CHAIN_IDS_PANDA)[number];

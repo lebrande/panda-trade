@@ -5,13 +5,13 @@ import { USDC_ADDRESS } from "@/lib/addresses";
 import { parseUnitsSafe } from "@/lib/parseUnitsSafe";
 import { useOdos } from "@/odos/useOdos";
 import { TradeParamsFormData } from "@/steps/1-ask-panda-step/types";
-import { base } from "viem/chains";
 import { useAccount } from "wagmi";
 import { Hex } from "viem";
 import { StepTitle } from "@/components/step-title";
 import { OutputTokensChart } from "@/steps/2-review-and-confirm/output-tokens-chart";
 import { TokenList } from "@/steps/2-review-and-confirm/token-list";
 import { ExecuteTransaction } from "@/steps/2-review-and-confirm/execute-transaction";
+import { baseWithBlockscout } from "@/lib/blockscout";
 
 const USDC_DECIMALS = 6;
 
@@ -39,9 +39,9 @@ export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
     data: odosData,
     error: odosError
   } = useOdos({
-    chainId: base.id,
+    chainId: baseWithBlockscout.id,
     tokenInAmount: inputTokenAmountParsed ?? 0n,
-    tokenInAddress: USDC_ADDRESS[base.id],
+    tokenInAddress: USDC_ADDRESS[baseWithBlockscout.id],
     outputTokens: pandaAdvice?.answer.tokens,
     slippage: 1,
     executorAddress: account.address,
