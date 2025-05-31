@@ -147,7 +147,7 @@ const outputTokensItemSchema = z.object({
   proportion: z.number(),
 });
 
-const outputTokensSchema = z.array(outputTokensItemSchema);
+export const outputTokensSchema = z.array(outputTokensItemSchema);
 
 type OutputTokens = z.infer<typeof outputTokensSchema>;
 

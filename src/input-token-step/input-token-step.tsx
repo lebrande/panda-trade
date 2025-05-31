@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 import { useState } from "react";
 import { parseUnitsSafe } from "@/lib/parseUnitsSafe";
 import { PathViz } from "@/components/path-viz";
+import { usePanda } from "@/app/panda/use-panda";
 
 const USDC_DECIMALS = 6;
 
@@ -20,7 +21,12 @@ export default function InputTokenStep() {
 
   const amountParsed = parseUnitsSafe(amount, USDC_DECIMALS);
 
-  console.log({ amountParsed });
+  const { data: pandaAdvice, error: pandaError } = usePanda({
+    riskLevel: 50,
+    tags: ['Stablecoin', 'DeFi'],
+  });
+
+  console.log({ pandaAdvice, pandaError });
 
   const { data, isFetching, error } = useOdos({
     chainId: base.id,
@@ -43,8 +49,6 @@ export default function InputTokenStep() {
     slippage: 1,
     executorAddress: account.address,
   });
-
-  console.log({ data });
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#212b36]">
