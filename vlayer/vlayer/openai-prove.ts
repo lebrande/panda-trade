@@ -14,6 +14,11 @@ import {
 const URL_TO_PROVE = "https://api.openai.com/v1/chat/completions";
 const PROMPT = "hello world";
 
+interface OpenAIResponse {
+  magic_number: string;
+  content: string;
+}
+
 const config = getConfig();
 const { chain, ethClient, account, proverUrl, confirmations, notaryUrl } =
   createContext(config);
@@ -31,10 +36,10 @@ const vlayer = createVlayerClient({
 
 async function generateWebProof(magicNumber: string) {
   console.log("⏳ Generating web proof...");
-  const result = await Bun.$`vlayer web-proof-fetch --notary ${notaryUrl} --url ${URL_TO_PROVE} -H "Authorization: Bearer ${process.env.OPENAI_API_KEY}" -H "Content-Type: application/json" -d '{"model": "gpt-3.5-turbo", "messages": 
-  [{"role": "user", "content": "In first line of response return magic_number:${magicNumber} and next answer for Prompt: ${PROMPT}"}]}'`;
+  const result = await Bun.$`vlayer web-proof-fetch --notary ${notaryUrl} --url ${URL_TO_PROVE} -H "Authorization: Bearer ${process.env.OPENAI_API_KEY}" -H "Content-Type: application/json" -H "OpenAI-Organization: ${process.env.OPENAI_ORGANIZATION_ID}" -H "OpenAI-Project: ${process.env.OPENAI_PROJECT_ID}" -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Start response with MAGIC_NUMBER:${magicNumber}\n Then provide your answer starting from second line for prompt: ${PROMPT}"}]}'`;
   return result.stdout.toString();
 }
+
 
   console.log("⏳ Deploying contracts...");
 
@@ -73,9 +78,19 @@ async function generateWebProof(magicNumber: string) {
   const result = await vlayer.waitForProvingResult({ hash });
   const [proof, response] = result;
   console.log("✅ Proof generated");
-  console.log("OpenAI Response:", response.content);
-  console.log("Model:", response.model);
-  console.log("ID:", response.id);
+
+  // Sprawdzamy nagłówki odpowiedzi
+  console.log("########################################");
+  console.log("OpenAI Response Headers:", {
+    model: response.model,
+    id: response.id,
+    object: response.object,
+    finish_reason: response.finishReason
+  });
+  console.log("########################################");
+
+  const responseLines = response.content.split('\n');
+  console.log("Response Lines:", responseLines);
 
   console.log("⏳ Verifying...");
 
@@ -113,7 +128,7 @@ async function generateWebProof(magicNumber: string) {
     functionName: "isResponseValid",
   });
 
-  const magicNumber= await ethClient.readContract({
+  const magicNumber = await ethClient.readContract({
     address: verifier,
     abi: verifierSpec.abi,
     functionName: "magicNumber",
@@ -121,3 +136,5 @@ async function generateWebProof(magicNumber: string) {
 
   console.log("Response validation result:", responseValid);
   console.log("Magic Number:", magicNumber);
+  console.log("Magic Number match:", responseLines[0] === `MAGIC_NUMBER:${magicNumber}`);
+
