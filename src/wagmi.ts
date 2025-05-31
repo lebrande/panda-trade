@@ -1,10 +1,10 @@
+import { baseWithBlockscout } from '@/lib/blockscout';
 import { http, cookieStorage, createConfig, createStorage } from 'wagmi'
-import { base, mainnet } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors';
 
 export function getConfig() {
   return createConfig({
-    chains: [mainnet, base],
+    chains: [baseWithBlockscout],
     connectors: [
       injected(),
     ],
@@ -13,8 +13,7 @@ export function getConfig() {
     }),
     ssr: true,
     transports: {
-      [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
-      [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
+      [baseWithBlockscout.id]: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
     },
   })
 }

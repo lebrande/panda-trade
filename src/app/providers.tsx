@@ -6,6 +6,7 @@ import { type State, WagmiProvider } from 'wagmi'
 
 import { getConfig } from '@/wagmi'
 import { darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { NotificationProvider } from "@blockscout/app-sdk";
 
 export function Providers(props: {
   children: ReactNode
@@ -18,7 +19,9 @@ export function Providers(props: {
     <WagmiProvider config={config} initialState={props.initialState}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={darkTheme()}>
-          {props.children}
+          <NotificationProvider>
+            {props.children}
+          </NotificationProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
