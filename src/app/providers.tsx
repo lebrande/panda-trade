@@ -5,7 +5,7 @@ import { type ReactNode, useState } from 'react'
 import { type State, WagmiProvider } from 'wagmi'
 
 import { getConfig } from '@/wagmi'
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 
 export function Providers(props: {
   children: ReactNode
@@ -17,7 +17,7 @@ export function Providers(props: {
   return (
     <WagmiProvider config={config} initialState={props.initialState}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
+        <RainbowKitProvider theme={darkTheme()}>
           {props.children}
         </RainbowKitProvider>
       </QueryClientProvider>
