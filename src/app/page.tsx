@@ -1,12 +1,12 @@
 'use client'
 
+import InputTokenStep from '@/input-token-step/input-token-step';
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect } from 'wagmi'
 
 function App() {
   const account = useAccount()
-  const { connectors, connect, status, error } = useConnect()
-  const { disconnect } = useDisconnect()
+  const { disconnect } = useDisconnect();
 
   return (
     <>
@@ -32,6 +32,8 @@ function App() {
       </div>
 
       <ConnectButton />
+
+      <InputTokenStep />
     </>
   )
 }
