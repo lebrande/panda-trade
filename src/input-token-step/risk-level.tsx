@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { FormDescription, FormMessage } from "@/components/ui/form";
+import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import { FormField } from "@/components/ui/form";
+import { useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { tradeFormSchema } from "@/input-token-step/trade-form";
+import { Slider } from "@/components/ui/slider";
 
 export const RiskLevel = () => {
-  const [riskLevel, setRiskLevel] = useState(0);
-  
+  const form = useFormContext<z.infer<typeof tradeFormSchema>>();
+
+  const riskLevel = form.watch('riskLevel');
+
   return (
     <div className="mb-8">
       <div className="flex items-center mb-4">
@@ -21,21 +29,28 @@ export const RiskLevel = () => {
           <span className="text-white">Very High</span>
         </div>
 
-        <div className="relative h-2 mb-2">
-          <div className="absolute w-full h-full rounded-full bg-gradient-to-r from-[#00a76f] via-[#ffcc33] to-[#fe0000]"></div>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={riskLevel}
-            onChange={(e) => setRiskLevel(Number.parseInt(e.target.value))}
-            className="absolute w-full h-full opacity-0 cursor-pointer"
-          />
-          <div
-            className="absolute w-6 h-6 -mt-2 -ml-3 bg-[#00a76f] rounded-full border-4 border-white"
-            style={{ left: `${riskLevel}%` }}
-          ></div>
-        </div>
+        <FormField
+          control={form.control}
+          name='riskLevel'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">Risk Level</FormLabel>
+              <FormControl>
+                <Slider
+                  max={100}
+                  step={1}
+                  onValueChange={(value) => field.onChange(value[0])}
+                  value={[riskLevel]}
+                  trackClassName="bg-gradient-to-r from-[#00a76f] via-[#ffcc33] to-[#fe0000]"
+                />
+              </FormControl>
+              <FormDescription className="sr-only">
+                This is your risk level.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   )
