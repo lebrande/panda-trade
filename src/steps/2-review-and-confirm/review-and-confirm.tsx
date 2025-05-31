@@ -88,7 +88,7 @@ export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
           pathVizImage={odosData.quoteResponse.pathVizImage}
         />
       </div>
-      <ExecuteTransaction odosResult={odosData} />
+      <ExecuteTransaction odosResult={odosData} onComplete={onComplete} />
     </div>
   )
 }

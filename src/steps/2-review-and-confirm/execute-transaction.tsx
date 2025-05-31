@@ -1,12 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { USDC_ADDRESS } from "@/lib/addresses";
+import { baseWithBlockscout } from "@/lib/blockscout";
 import { OdosResult } from "@/odos/useOdos";
-import { erc20Abi } from "viem";
+import { useNotification } from "@blockscout/app-sdk";
+import { erc20Abi, Hex } from "viem";
 import { useAccount, useReadContract, useSendTransaction, useWriteContract } from "wagmi";
 import { useChainId } from 'wagmi'
 
 interface Props {
   odosResult: OdosResult;
+  onComplete: (txHash: Hex) => void;
 }
 
 export const ExecuteTransaction = (props: Props) => {
@@ -21,6 +24,7 @@ export const ExecuteTransaction = (props: Props) => {
     args: [address!, assembleResponse.transaction.to],
     query: {
       enabled: address !== undefined,
+      refetchInterval: 3000,
     }
   });
 
@@ -38,8 +42,9 @@ export const ExecuteTransaction = (props: Props) => {
   )
 }
 
-const SendTransactionButton = ({ odosResult }: Props) => {
-  const { sendTransaction } = useSendTransaction();
+const SendTransactionButton = ({ odosResult, onComplete }: Props) => {
+  const { sendTransactionAsync } = useSendTransaction();
+  const { openTxToast } = useNotification();
 
   const {
     data,
@@ -50,20 +55,28 @@ const SendTransactionButton = ({ odosResult }: Props) => {
     value,
   } = odosResult.assembleResponse.transaction;
 
+  const handleSendTransaction = async () => {
+    try {
+      const txHash = await sendTransactionAsync({
+        data,
+        to,
+        value: BigInt(value),
+        gas: BigInt(gas),
+        gasPrice: BigInt(gasPrice),
+        nonce,
+      });
+      
+      openTxToast(baseWithBlockscout.id.toString(), txHash);
+
+      onComplete(txHash);
+    } catch (error) {
+      console.error("Transaction failed:", error);
+    }
+  }
+
   return (
     <div>
-      <Button
-        onClick={() => {
-          sendTransaction({
-            data,
-            to,
-            value: BigInt(value),
-            gas: BigInt(gas),
-            gasPrice: BigInt(gasPrice),
-            nonce,
-          })
-        }}
-      >
+      <Button onClick={handleSendTransaction}>
         Execute Transaction
       </Button>
     </div>
@@ -72,25 +85,32 @@ const SendTransactionButton = ({ odosResult }: Props) => {
 
 const ApproveTransactionButton = ({ odosResult }: Props) => {
   const chainId = useChainId();
-  const { writeContract } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
+  const { openTxToast } = useNotification();
 
   const inputTokenAmount = odosResult.assembleResponse.inputTokens[0].amount;
 
+  const handleApproveTransaction = async () => {
+    try {
+      const txHash = await writeContractAsync({
+        address: USDC_ADDRESS[chainId],
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [
+          odosResult.assembleResponse.transaction.to, 
+          BigInt(inputTokenAmount)
+        ],
+      })
+      
+      openTxToast(baseWithBlockscout.id.toString(), txHash);
+    } catch (error) {
+      console.error("Transaction failed:", error);
+    }
+  }
+
   return (
     <div>
-      <Button
-        onClick={() => {
-          writeContract({
-            address: USDC_ADDRESS[chainId],
-            abi: erc20Abi,
-            functionName: "approve",
-            args: [
-              odosResult.assembleResponse.transaction.to, 
-              BigInt(inputTokenAmount)
-            ],
-          })
-        }}
-      >
+      <Button onClick={handleApproveTransaction}>
         Approve Transaction
       </Button>
     </div>
