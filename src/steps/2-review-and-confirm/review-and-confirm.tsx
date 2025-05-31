@@ -8,6 +8,8 @@ import { TradeParamsFormData } from "@/steps/1-ask-panda-step/types";
 import { base } from "viem/chains";
 import { useAccount } from "wagmi";
 import { Hex } from "viem";
+import { StepTitle } from "@/components/step-title";
+import { OutputTokensChart } from "@/steps/2-review-and-confirm/output-tokens-chart";
 
 const USDC_DECIMALS = 6;
 
@@ -24,7 +26,6 @@ export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
   const {
     data: pandaAdvice,
     error: pandaError,
-    isFetching: isPandaFetching
   } = usePanda({
     riskLevel: tradeParams.riskLevel,
     tags: ['Stablecoin', 'DeFi'],
@@ -34,7 +35,6 @@ export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
 
   const {
     data: odosData,
-    isFetching: isOdosFetching,
     error: odosError
   } = useOdos({
     chainId: base.id,
@@ -45,24 +45,39 @@ export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
     executorAddress: account.address,
   });
 
-  console.log({ isPandaFetching, isOdosFetching, pandaError, odosError });
+  if (pandaError || odosError) {
+    return (
+      <div>
+        <h1>Error</h1>
+        <pre>
+          <code>
+            {JSON.stringify(pandaError, null, 2)}
+          </code>
+        </pre>
+        <pre>
+          <code>
+            {JSON.stringify(odosError, null, 2)}
+          </code>
+        </pre>
+      </div>
+    )
+  }
 
-  if (isPandaFetching || isOdosFetching) {
+  if (pandaAdvice === undefined || odosData === undefined) {
     return (
       <ThinkingPanda />
     )
   }
 
-  if (pandaError || odosError) {
-    return (
-      <div>
-        <h1>Error</h1>
-      </div>
-    )
-  }
-
   return (
     <div>
+      <StepTitle>
+        Review and Confirm
+      </StepTitle>
+      <OutputTokensChart
+        tokens={pandaAdvice.answer.tokens}
+        inputTokenAmount={tradeParams.inputTokenAmount}
+      />
       <div>
         <pre>
           <code>
@@ -72,9 +87,9 @@ export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
       </div>
       <div className="col-span-2 min-h-[350px] border border-border rounded-lg flex justify-center items-center flex-col">
         <PathViz
-          isFetching={isOdosFetching}
-          isError={Boolean(odosError)}
-          pathVizImage={odosData?.pathVizImage}
+          isFetching={false}
+          isError={false}
+          pathVizImage={odosData.pathVizImage}
         />
       </div>
     </div>

@@ -157,6 +157,6 @@ const outputTokensItemSchema = z.object({
 
 export const outputTokensSchema = z.array(outputTokensItemSchema);
 
-type OutputTokens = z.infer<typeof outputTokensSchema>;
+export type OutputTokens = z.infer<typeof outputTokensSchema>;
 
 

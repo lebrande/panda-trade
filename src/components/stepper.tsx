@@ -10,16 +10,16 @@ export const Stepper = ({ currentStep }: Props) => {
   return (
     <div className="grid grid-cols-3 gap-1">
       <StepperItem
-        step="ask-panda"
-        isCurrentStep={currentStep === 'ask-panda'}
+        step="1-ask-panda"
+        isCurrentStep={currentStep === '1-ask-panda'}
       />
       <StepperItem
-        step="review-and-confirm"
-        isCurrentStep={currentStep === 'review-and-confirm'}
+        step="2-review-and-confirm"
+        isCurrentStep={currentStep === '2-review-and-confirm'}
       />
       <StepperItem
-        step="trade-completed"
-        isCurrentStep={currentStep === 'trade-completed'}
+        step="3-trade-completed"
+        isCurrentStep={currentStep === '3-trade-completed'}
       />
     </div>
   )
@@ -52,7 +52,7 @@ const StepperItem = ({
 }
 
 const LABELS: Record<Step, string> = {
-  'ask-panda': 'Ask Panda',
-  'review-and-confirm': 'Review and confirm',
-  'trade-completed': 'Trade Completed',
+  '1-ask-panda': 'Ask Panda',
+  '2-review-and-confirm': 'Review and confirm',
+  '3-trade-completed': 'Trade Completed',
 } as const;
