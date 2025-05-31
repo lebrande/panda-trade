@@ -15,7 +15,7 @@ export const ThinkingPanda = () => {
 
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground text-center">Hang tight...</p>
-        <p className="text-base text-foreground text-center">I'm crunching the numbers and sniffing out the best swap for you.</p>
+        <p className="text-base text-foreground text-center">I'm crunching the numbers and sniffing out the best trade for you.</p>
       </div>
 
       <div className="flex justify-center">

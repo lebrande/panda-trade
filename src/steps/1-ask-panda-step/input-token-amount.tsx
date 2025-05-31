@@ -4,18 +4,16 @@ import { tradeParamsFormSchema } from "@/steps/1-ask-panda-step/types";
 import { numberStringSchema } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
+import { SectionTitle } from "@/components/section-title";
 
 export const InputTokenAmount = () => {
   const form = useFormContext<z.infer<typeof tradeParamsFormSchema>>();
 
   return (
     <div className="mb-6">
-      <div className="flex items-center mb-4">
-        <div className="flex items-center justify-center w-8 h-8 mr-3 text-white bg-[#00a76f] rounded-full">
-          <span>1</span>
-        </div>
-        <h4 className="text-lg font-medium text-white">How much you want to swap?</h4>
-      </div>
+      <SectionTitle number={1}>
+        How much you want to swap?
+      </SectionTitle>
 
       <div className="p-4 rounded-xl bg-[#333d49]">
         <div className="flex items-center justify-between">

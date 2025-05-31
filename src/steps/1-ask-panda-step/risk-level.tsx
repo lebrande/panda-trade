@@ -5,6 +5,7 @@ import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { tradeParamsFormSchema } from "@/steps/1-ask-panda-step/types";
 import { Slider } from "@/components/ui/slider";
+import { SectionTitle } from "@/components/section-title";
 
 export const RiskLevel = () => {
   const form = useFormContext<z.infer<typeof tradeParamsFormSchema>>();
@@ -13,12 +14,9 @@ export const RiskLevel = () => {
 
   return (
     <div className="mb-8">
-      <div className="flex items-center mb-4">
-        <div className="flex items-center justify-center w-8 h-8 mr-3 text-white bg-[#00a76f] rounded-full">
-          <span>2</span>
-        </div>
-        <h4 className="text-lg font-medium text-white">What is your risk level?</h4>
-      </div>
+      <SectionTitle number={2}>
+        What is your risk appetite?
+      </SectionTitle>
 
       <div className="p-6 rounded-xl bg-[#333d49]">
         <div className="flex justify-between mb-4 text-sm">
