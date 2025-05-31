@@ -1,10 +1,10 @@
 'use client'
 
-import { AskPandaStep } from '@/steps/ask-panda-step/ask-panda-step';
+import { AskPandaStep } from '@/steps/2-review-and-confirm/ask-panda-step';
 import { AppContainer } from '@/components/app-container';
 import { Stepper } from '@/components/stepper';
-import { TradeParamsForm } from '@/steps/trade-params-step/trade-params-form';
-import { TradeParamsFormData } from '@/steps/trade-params-step/types';
+import { TradeParamsForm } from '@/steps/1-ask-panda-step/trade-params-form';
+import { TradeParamsFormData } from '@/steps/1-ask-panda-step/types';
 import { useState } from 'react';
 
 function App() {

@@ -5,10 +5,10 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form } from "@/components/ui/form"
 import { PandaTop } from "@/components/panda-top";
-import { RiskLevel } from "@/steps/trade-params-step/risk-level";
-import { InputTokenAmount } from "@/steps/trade-params-step/input-token-amount";
-import { SwapHeader } from "@/steps/trade-params-step/swap-header";
-import { TradeParamsFormData, tradeParamsFormSchema } from "@/steps/trade-params-step/types"
+import { RiskLevel } from "@/steps/1-ask-panda-step/risk-level";
+import { InputTokenAmount } from "@/steps/1-ask-panda-step/input-token-amount";
+import { SwapHeader } from "@/steps/1-ask-panda-step/swap-header";
+import { TradeParamsFormData, tradeParamsFormSchema } from "@/steps/1-ask-panda-step/types"
 
 interface Props {
   onComplete: (data: TradeParamsFormData) => void;

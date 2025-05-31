@@ -59,6 +59,7 @@ export const useOdos = ({
       outputTokens !== undefined &&
       outputTokens.length > 0 &&
       tokenInAmount !== 0n,
+    staleTime: Infinity,
   });
 
   return result;
