@@ -4,7 +4,6 @@ import verifierSpec from "../../vlayer/out/OpenAIVerifier.sol/OpenAIVerifier";
 import { getConfig, createContext, deployVlayerContracts, writeEnvVariables } from "@vlayer/sdk/config";
 
 interface OpenAIResponse {
-  magic_number: string;
   content: string;
 }
 
@@ -12,12 +11,6 @@ interface VerificationResult {
   isValid: boolean;
   response?: OpenAIResponse;
   error?: string;
-  magicNumber?: string;
-  details?: {
-    openaiResponse?: string;
-    verificationStatus?: string;
-    blockchainVerified?: boolean;
-  };
 }
 
 export async function verifyOpenAIResponse(
@@ -36,14 +29,11 @@ export async function verifyOpenAIResponse(
       token: config.token,
     });
 
-    const initialMagicNumber = Math.random().toString(36).substring(2, 8);
-    console.log("Initial Magic Number:", initialMagicNumber);
-
     const { prover, verifier } = await deployVlayerContracts({
       proverSpec,
       verifierSpec,
       proverArgs: [],
-      verifierArgs: [initialMagicNumber],
+      verifierArgs: [],
     });
 
     await writeEnvVariables(".env", {
@@ -54,7 +44,7 @@ export async function verifyOpenAIResponse(
     console.log("✅ Contracts deployed", { prover, verifier });
 
     console.log("⏳ Generating web proof...");
-    const webProof = await Bun.$`vlayer web-proof-fetch --notary ${notaryUrl} --url https://api.openai.com/v1/chat/completions -H "Authorization: Bearer ${process.env.OPENAI_API_KEY}" -H "Content-Type: application/json" -H "OpenAI-Organization: ${process.env.OPENAI_ORGANIZATION_ID}" -H "OpenAI-Project: ${process.env.OPENAI_PROJECT_ID}" -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Start response with MAGIC_NUMBER:${initialMagicNumber}\n Then provide your answer starting from second line for prompt: ${prompt}"}]}'`;
+    const webProof = await Bun.$`vlayer web-proof-fetch --notary ${notaryUrl} --url https://api.openai.com/v1/chat/completions -H "Authorization: Bearer ${process.env.OPENAI_API_KEY}" -H "Content-Type: application/json" -H "OpenAI-Organization: ${process.env.OPENAI_ORGANIZATION_ID}" -H "OpenAI-Project: ${process.env.OPENAI_PROJECT_ID}" -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "${prompt}"}]}'`;
 
     console.log("⏳ Generating proof...");
     const hash = await vlayer.prove({
@@ -73,22 +63,6 @@ export async function verifyOpenAIResponse(
     const result = await vlayer.waitForProvingResult({ hash });
     const [proof, response] = result;
     console.log("✅ Proof generated");
-
-    const responseLines = response.content.split('\n');
-    const magicNumberLine = responseLines[0];
-    const content = responseLines.slice(1).join('\n');
-
-    if (!magicNumberLine.startsWith(`MAGIC_NUMBER:${initialMagicNumber}`)) {
-      return {
-        isValid: false,
-        error: "Invalid magic number in response",
-        magicNumber: initialMagicNumber,
-        details: {
-          openaiResponse: response.content,
-          verificationStatus: "Failed - Invalid magic number"
-        }
-      };
-    }
 
     console.log("⏳ Verifying on blockchain...");
     const gas = await ethClient.estimateContractGas({
@@ -119,39 +93,17 @@ export async function verifyOpenAIResponse(
 
     console.log("✅ Blockchain verification completed");
 
-    const responseValid = await ethClient.readContract({
-      address: verifier,
-      abi: verifierSpec.abi,
-      functionName: "isResponseValid",
-    });
-
-    const storedMagicNumber = await ethClient.readContract({
-      address: verifier,
-      abi: verifierSpec.abi,
-      functionName: "magicNumber",
-    });
-
     return {
-      isValid: responseValid && initialMagicNumber === storedMagicNumber,
+      isValid: true,
       response: {
-        magic_number: initialMagicNumber,
-        content: content
-      },
-      magicNumber: storedMagicNumber,
-      details: {
-        openaiResponse: response.content,
-        verificationStatus: responseValid ? "Success - Response verified on blockchain" : "Failed - Response verification failed",
-        blockchainVerified: responseValid
+        content: response.content
       }
     };
 
   } catch (error) {
     return {
       isValid: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-      details: {
-        verificationStatus: "Failed - Error during verification"
-      }
+      error: error instanceof Error ? error.message : "Unknown error occurred"
     };
   }
 }

@@ -10,25 +10,16 @@ contract OpenAIProver is Prover {
     using WebLib for Web;
 
     string public constant DATA_URL = "https://api.openai.com/v1/chat/completions";
-    uint256 public magicNumber;
 
     struct OpenAIResponse {
         string content;
-        string model;
-        string id;
-        string object;
-        string finishReason;
     }
 
     function main(WebProof calldata webProof) public view returns (Proof memory, OpenAIResponse memory) {
         Web memory web = webProof.verify(DATA_URL);
 
         OpenAIResponse memory response = OpenAIResponse({
-            content: web.jsonGetString("choices[0].message.content"),
-            model: web.jsonGetString("model"),
-            id: web.jsonGetString("id"),
-            object: web.jsonGetString("object"),
-            finishReason: web.jsonGetString("choices[0].finish_reason")
+            content: web.jsonGetString("choices[0].message.content")
         });
         
         return (proof(), response);
