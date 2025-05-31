@@ -14,7 +14,7 @@ interface Props {
   onComplete: (data: TradeParamsFormData) => void;
 }
 
-export function TradeParamsForm({ onComplete }: Props) {
+export function AskPanda({ onComplete }: Props) {
   const form = useForm<z.infer<typeof tradeParamsFormSchema>>({
     resolver: zodResolver(tradeParamsFormSchema),
     defaultValues: {

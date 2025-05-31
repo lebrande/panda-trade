@@ -1,11 +1,13 @@
 'use client'
 
-import { AskPandaStep } from '@/steps/2-review-and-confirm/ask-panda-step';
+import { ReviewAndConfirm } from '@/steps/2-review-and-confirm/review-and-confirm';
 import { AppContainer } from '@/components/app-container';
 import { Stepper } from '@/components/stepper';
-import { TradeParamsForm } from '@/steps/1-ask-panda-step/trade-params-form';
+import { AskPanda } from '@/steps/1-ask-panda-step/ask-panda';
 import { TradeParamsFormData } from '@/steps/1-ask-panda-step/types';
 import { useState } from 'react';
+import { Hex } from 'viem';
+import { TradeCompleted } from '@/steps/3-trade-completed/trade-completed';
 
 function App() {
   return (
@@ -17,20 +19,33 @@ function App() {
 
 const CurrentStep = () => {
   const [tradeParams, setTradeParams] = useState<TradeParamsFormData>();
+  const [tradeTxHash, setTradeTxHash] = useState<Hex>();
 
-  if (tradeParams === undefined) {
+  if (tradeTxHash) {
     return (
       <div className="space-y-4">
-        <Stepper currentStep="ask-panda" />
-        <TradeParamsForm onComplete={setTradeParams} />
+        <Stepper currentStep="3-trade-completed" />
+        <TradeCompleted />
+      </div>
+    )
+  }
+
+  if (tradeParams) {
+    return (
+      <div className="space-y-4">
+        <Stepper currentStep="2-review-and-confirm" />
+        <ReviewAndConfirm
+          tradeParams={tradeParams}
+          onComplete={setTradeTxHash}
+        />
       </div>
     )
   }
 
   return (
     <div className="space-y-4">
-      <Stepper currentStep="review-and-confirm" />
-      <AskPandaStep tradeParams={tradeParams} />
+      <Stepper currentStep="1-ask-panda" />
+      <AskPanda onComplete={setTradeParams} />
     </div>
   )
 }

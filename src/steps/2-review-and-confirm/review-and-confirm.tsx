@@ -7,14 +7,16 @@ import { useOdos } from "@/odos/useOdos";
 import { TradeParamsFormData } from "@/steps/1-ask-panda-step/types";
 import { base } from "viem/chains";
 import { useAccount } from "wagmi";
+import { Hex } from "viem";
 
 const USDC_DECIMALS = 6;
 
 interface Props {
   tradeParams: TradeParamsFormData;
+  onComplete: (txHash: Hex) => void;
 }
 
-export const AskPandaStep = ({ tradeParams }: Props) => {
+export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
   const account = useAccount();
 
   console.log({ tradeParams });
