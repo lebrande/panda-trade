@@ -10,6 +10,9 @@ out/
 # Docs
 docs/
 
+vlayer/node_modules/
+vlayer/bun.lockb
+
 # Dotenv file
 .env
 **/dependencies/
