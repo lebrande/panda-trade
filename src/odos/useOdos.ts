@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Address } from 'viem';
+import { Address, getAddress } from 'viem';
 import { z } from 'zod';
 import axios from 'axios';
 import { OdosQuoteResponse, OdosAssembleResponse } from './types';
@@ -79,6 +79,13 @@ const getPriceRoute = async ({
   executorAddress: Address;
   slippage: number;
 }) => {
+  // address to checksum address
+  const outputTokensChecksumed = outputTokens.map((token) => {
+    return {
+      tokenAddress: getAddress(token.tokenAddress),
+      proportion: token.proportion,
+    }
+  });
   const quoteRequestBody = {
     chainId,
     inputTokens: [
@@ -87,7 +94,7 @@ const getPriceRoute = async ({
         amount: tokenInAmount.toString(),
       },
     ],
-    outputTokens,
+    outputTokens: outputTokensChecksumed,
     userAddr: executorAddress,
     slippageLimitPercent: +slippage,
     referralCode: 0,

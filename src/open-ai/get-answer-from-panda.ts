@@ -47,6 +47,7 @@ export const getAnswerFromPanda = async ({
     My tags are ${tagsParamsString}.
 
     Pick tokens from the list below.
+    Don't use USDC.
 
     ${JSON.stringify(tokens)}
     `;

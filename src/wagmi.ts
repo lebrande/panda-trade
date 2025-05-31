@@ -13,8 +13,8 @@ export function getConfig() {
     }),
     ssr: true,
     transports: {
-      [mainnet.id]: http(),
-      [base.id]: http(),
+      [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
+      [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
     },
   })
 }

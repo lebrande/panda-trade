@@ -10,3 +10,5 @@ export const addressSchema = z.custom<Address>(
 export const hexSchema = z.custom<Hex>((hex) => isHex(hex), {
   message: 'Incorrect hex value',
 });
+
+export const numberStringSchema = z.string().regex(/^-?[0-9]+(\.[0-9]+)?$/);

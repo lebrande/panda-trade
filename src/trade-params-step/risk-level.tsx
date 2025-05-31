@@ -3,11 +3,11 @@ import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { FormField } from "@/components/ui/form";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { tradeFormSchema } from "@/input-token-step/trade-form";
+import { tradeParamsFormSchema } from "@/trade-params-step/types";
 import { Slider } from "@/components/ui/slider";
 
 export const RiskLevel = () => {
-  const form = useFormContext<z.infer<typeof tradeFormSchema>>();
+  const form = useFormContext<z.infer<typeof tradeParamsFormSchema>>();
 
   const riskLevel = form.watch('riskLevel');
 

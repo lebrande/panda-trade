@@ -12,6 +12,11 @@ import { Navbar } from '@/components/navbar';
 
 const inter = Inter({ subsets: ['latin'] })
 
+// @ts-expect-error
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
 export const metadata: Metadata = {
   title: 'Panda Trade',
   description: 'Panda Trade',
