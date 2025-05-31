@@ -79,7 +79,6 @@ async function generateWebProof(magicNumber: string) {
   const [proof, response] = result;
   console.log("✅ Proof generated");
 
-  // Sprawdzamy nagłówki odpowiedzi
   console.log("########################################");
   console.log("OpenAI Response Headers:", {
     model: response.model,

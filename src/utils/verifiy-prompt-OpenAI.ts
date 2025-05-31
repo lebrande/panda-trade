@@ -28,7 +28,7 @@ export async function verifyOpenAIResponse(
     const { chain, ethClient, account, proverUrl, confirmations, notaryUrl } = createContext(config);
 
     if (!account) {
-      throw new Error("Brak konta - upewnij się, że EXAMPLES_TEST_PRIVATE_KEY jest ustawiony w zmiennych środowiskowych");
+      throw new Error("No account found - make sure EXAMPLES_TEST_PRIVATE_KEY is set in your environment variables");
     }
 
     const vlayer = createVlayerClient({
@@ -53,10 +53,10 @@ export async function verifyOpenAIResponse(
 
     console.log("✅ Contracts deployed", { prover, verifier });
 
-    console.log("⏳ Generowanie dowodu web...");
+    console.log("⏳ Generating web proof...");
     const webProof = await Bun.$`vlayer web-proof-fetch --notary ${notaryUrl} --url https://api.openai.com/v1/chat/completions -H "Authorization: Bearer ${process.env.OPENAI_API_KEY}" -H "Content-Type: application/json" -H "OpenAI-Organization: ${process.env.OPENAI_ORGANIZATION_ID}" -H "OpenAI-Project: ${process.env.OPENAI_PROJECT_ID}" -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Start response with MAGIC_NUMBER:${initialMagicNumber}\n Then provide your answer starting from second line for prompt: ${prompt}"}]}'`;
 
-    console.log("⏳ Generowanie dowodu...");
+    console.log("⏳ Generating proof...");
     const hash = await vlayer.prove({
       address: prover,
       functionName: "main",
@@ -81,7 +81,7 @@ export async function verifyOpenAIResponse(
     if (!magicNumberLine.startsWith(`MAGIC_NUMBER:${initialMagicNumber}`)) {
       return {
         isValid: false,
-        error: "Bad number",
+        error: "Invalid magic number in response",
         magicNumber: initialMagicNumber,
         details: {
           openaiResponse: response.content,
@@ -90,7 +90,7 @@ export async function verifyOpenAIResponse(
       };
     }
 
-    console.log("⏳ Weryfikacja...");
+    console.log("⏳ Verifying on blockchain...");
     const gas = await ethClient.estimateContractGas({
       address: verifier,
       abi: verifierSpec.abi,
@@ -116,6 +116,8 @@ export async function verifyOpenAIResponse(
       retryCount: 60,
       retryDelay: 1000,
     });
+
+    console.log("✅ Blockchain verification completed");
 
     const responseValid = await ethClient.readContract({
       address: verifier,
