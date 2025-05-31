@@ -71,7 +71,6 @@ console.log("✅ Proof generated");
 
 console.log("⏳ Verifying...");
 
-// Workaround for viem estimating gas with `latest` block causing future block assumptions to fail on slower chains like mainnet/sepolia
 const gas = await ethClient.estimateContractGas({
   address: verifier,
   abi: verifierSpec.abi,
