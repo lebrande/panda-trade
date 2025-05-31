@@ -19,7 +19,6 @@ export const usePanda = (args: Partial<PandaPromptArgs>) => {
     },
     enabled: args.riskLevel !== undefined && args.tags !== undefined,
     staleTime: Infinity,
-    retry: false,
   });
 
   return result;

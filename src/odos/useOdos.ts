@@ -3,7 +3,7 @@ import { Address, getAddress } from 'viem';
 import { z } from 'zod';
 import axios from 'axios';
 import { OdosQuoteResponse, OdosAssembleResponse } from './types';
-import { addressSchema, hexSchema } from '@/lib/schema';
+import { addressSchema } from '@/lib/schema';
 
 const odosClient = axios.create({
   baseURL: 'https://api.odos.xyz/',
@@ -121,34 +121,13 @@ const getPriceRoute = async ({
       assembleRequestBody,
     );
 
-  const tokenOutAmount = assembleResponse.outputTokens[0]?.amount;
-
-  if (tokenOutAmount === undefined) {
-    throw new Error('tokenOutAmount is undefined');
+  return {
+    assembleResponse,
+    quoteResponse,
   }
-
-  const { transaction } = assembleResponse;
-
-  return resultSchema.parse({
-    transaction: {
-      calldata: transaction.data,
-      target: transaction.to,
-    },
-    tokenOutAmount: BigInt(tokenOutAmount),
-    tokenTransferProxy: transaction.to,
-    pathVizImage: quoteResponse.pathVizImage,
-  });
 };
 
-const resultSchema = z.object({
-  transaction: z.object({
-    calldata: hexSchema,
-    target: addressSchema,
-  }),
-  tokenOutAmount: z.bigint(),
-  tokenTransferProxy: addressSchema,
-  pathVizImage: z.string(),
-});
+export type OdosResult = Awaited<ReturnType<typeof getPriceRoute>>;
 
 const outputTokensItemSchema = z.object({
   tokenAddress: addressSchema,

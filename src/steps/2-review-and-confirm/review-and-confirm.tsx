@@ -1,4 +1,4 @@
-import { usePanda } from "@/app/panda/use-panda";
+import { usePanda } from "@/panda/use-panda";
 import { ThinkingPanda } from "@/steps/2-review-and-confirm/thinking-panda";
 import { PathViz } from "@/components/path-viz";
 import { USDC_ADDRESS } from "@/lib/addresses";
@@ -10,6 +10,7 @@ import { useAccount } from "wagmi";
 import { Hex } from "viem";
 import { StepTitle } from "@/components/step-title";
 import { OutputTokensChart } from "@/steps/2-review-and-confirm/output-tokens-chart";
+import { TokenList } from "@/steps/2-review-and-confirm/token-list";
 
 const USDC_DECIMALS = 6;
 
@@ -78,18 +79,12 @@ export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
         tokens={pandaAdvice.answer.tokens}
         inputTokenAmount={tradeParams.inputTokenAmount}
       />
-      <div>
-        <pre>
-          <code>
-            {JSON.stringify(pandaAdvice, null, 2)}
-          </code>
-        </pre>
-      </div>
+      <TokenList odosResult={odosData} />
       <div className="col-span-2 min-h-[350px] border border-border rounded-lg flex justify-center items-center flex-col">
         <PathViz
           isFetching={false}
           isError={false}
-          pathVizImage={odosData.pathVizImage}
+          pathVizImage={odosData.quoteResponse.pathVizImage}
         />
       </div>
     </div>
