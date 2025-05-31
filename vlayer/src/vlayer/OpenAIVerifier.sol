@@ -9,7 +9,6 @@ import "forge-std/Test.sol";
 contract OpenAIVerifier is Verifier {
     address public prover;
     string public lastResponse;
-    string public expectedPrompt;
     string public lastId;
     string public lastObject;
     string public lastFinishReason;
@@ -27,29 +26,31 @@ contract OpenAIVerifier is Verifier {
         lastFinishReason = _response.finishReason;
     }
 
-    function checkPromptMatch() public view returns (bool) {
-        return keccak256(bytes(lastResponse)) == keccak256(bytes(expectedPrompt));
-    }
-
     function isResponseValid() public view returns (bool) {
+
         bool validId = bytes(lastId).length > 0;
         bool validObject = keccak256(bytes(lastObject)) == keccak256(bytes("chat.completion"));
         bool validFinishReason = keccak256(bytes(lastFinishReason)) == keccak256(bytes("stop"));
         
-        string memory expectedPrefix = string.concat("magic_number:", magicNumber);
         bytes memory responseBytes = bytes(lastResponse);
-        bytes memory prefixBytes = bytes(expectedPrefix);
+        if (responseBytes.length == 0) return false;
+
+        string memory expectedMagicLine = string.concat("MAGIC_NUMBER:", magicNumber);
+        bytes memory magicLineBytes = bytes(expectedMagicLine);
         
-        bool validMagicNumber = responseBytes.length >= prefixBytes.length;
-        
-        if (validMagicNumber) {
-            bytes memory responsePrefix = new bytes(prefixBytes.length);
-            for (uint i = 0; i < prefixBytes.length; i++) {
-                responsePrefix[i] = responseBytes[i];
+        bool validMagicLine = responseBytes.length >= magicLineBytes.length;
+        if (validMagicLine) {
+            for (uint i = 0; i < magicLineBytes.length; i++) {
+                if (responseBytes[i] != magicLineBytes[i]) {
+                    validMagicLine = false;
+                    break;
+                }
             }
-            validMagicNumber = keccak256(prefixBytes) == keccak256(responsePrefix);
         }
         
-        return validId && validObject && validFinishReason && validMagicNumber;
+        bool hasNewLine = responseBytes.length > magicLineBytes.length && 
+            (responseBytes[magicLineBytes.length] == '\n' || responseBytes[magicLineBytes.length] == '\r');
+        
+        return validId && validObject && validFinishReason && validMagicLine && hasNewLine;
     }
 } 
