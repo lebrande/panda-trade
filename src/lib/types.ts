@@ -11,3 +11,4 @@ export const CHAIN_IDS_PANDA = [
 
 export type ChainIdPanda = (typeof CHAIN_IDS_PANDA)[number];
 
+export type Step = '1-ask-panda' | '2-review-and-confirm' | '3-trade-completed';

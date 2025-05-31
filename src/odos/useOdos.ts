@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { Address } from 'viem';
+import { Address, getAddress } from 'viem';
 import { z } from 'zod';
 import axios from 'axios';
 import { OdosQuoteResponse, OdosAssembleResponse } from './types';
-import { addressSchema, hexSchema } from '@/lib/schema';
+import { addressSchema } from '@/lib/schema';
 
 const odosClient = axios.create({
   baseURL: 'https://api.odos.xyz/',
@@ -59,6 +59,7 @@ export const useOdos = ({
       outputTokens !== undefined &&
       outputTokens.length > 0 &&
       tokenInAmount !== 0n,
+    staleTime: Infinity,
   });
 
   return result;
@@ -79,6 +80,13 @@ const getPriceRoute = async ({
   executorAddress: Address;
   slippage: number;
 }) => {
+  // address to checksum address
+  const outputTokensChecksumed = outputTokens.map((token) => {
+    return {
+      tokenAddress: getAddress(token.tokenAddress),
+      proportion: token.proportion,
+    }
+  });
   const quoteRequestBody = {
     chainId,
     inputTokens: [
@@ -87,7 +95,7 @@ const getPriceRoute = async ({
         amount: tokenInAmount.toString(),
       },
     ],
-    outputTokens,
+    outputTokens: outputTokensChecksumed,
     userAddr: executorAddress,
     slippageLimitPercent: +slippage,
     referralCode: 0,
@@ -113,34 +121,13 @@ const getPriceRoute = async ({
       assembleRequestBody,
     );
 
-  const tokenOutAmount = assembleResponse.outputTokens[0]?.amount;
-
-  if (tokenOutAmount === undefined) {
-    throw new Error('tokenOutAmount is undefined');
+  return {
+    assembleResponse,
+    quoteResponse,
   }
-
-  const { transaction } = assembleResponse;
-
-  return resultSchema.parse({
-    transaction: {
-      calldata: transaction.data,
-      target: transaction.to,
-    },
-    tokenOutAmount: BigInt(tokenOutAmount),
-    tokenTransferProxy: transaction.to,
-    pathVizImage: quoteResponse.pathVizImage,
-  });
 };
 
-const resultSchema = z.object({
-  transaction: z.object({
-    calldata: hexSchema,
-    target: addressSchema,
-  }),
-  tokenOutAmount: z.bigint(),
-  tokenTransferProxy: addressSchema,
-  pathVizImage: z.string(),
-});
+export type OdosResult = Awaited<ReturnType<typeof getPriceRoute>>;
 
 const outputTokensItemSchema = z.object({
   tokenAddress: addressSchema,
@@ -149,6 +136,6 @@ const outputTokensItemSchema = z.object({
 
 export const outputTokensSchema = z.array(outputTokensItemSchema);
 
-type OutputTokens = z.infer<typeof outputTokensSchema>;
+export type OutputTokens = z.infer<typeof outputTokensSchema>;
 
 
