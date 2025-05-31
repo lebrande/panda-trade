@@ -1,10 +1,10 @@
 import { usePanda } from "@/app/panda/use-panda";
-import { ThinkingPanda } from "@/ask-panda-step/thinking-panda";
+import { ThinkingPanda } from "@/steps/ask-panda-step/thinking-panda";
 import { PathViz } from "@/components/path-viz";
 import { USDC_ADDRESS } from "@/lib/addresses";
 import { parseUnitsSafe } from "@/lib/parseUnitsSafe";
 import { useOdos } from "@/odos/useOdos";
-import { TradeParamsFormData } from "@/trade-params-step/types";
+import { TradeParamsFormData } from "@/steps/trade-params-step/types";
 import { base } from "viem/chains";
 import { useAccount } from "wagmi";
 

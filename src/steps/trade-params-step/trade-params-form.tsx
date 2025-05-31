@@ -5,10 +5,10 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form } from "@/components/ui/form"
 import { PandaTop } from "@/components/panda-top";
-import { RiskLevel } from "@/trade-params-step/risk-level";
-import { InputTokenAmount } from "@/trade-params-step/input-token-amount";
-import { SwapHeader } from "@/trade-params-step/swap-header";
-import { TradeParamsFormData, tradeParamsFormSchema } from "@/trade-params-step/types"
+import { RiskLevel } from "@/steps/trade-params-step/risk-level";
+import { InputTokenAmount } from "@/steps/trade-params-step/input-token-amount";
+import { SwapHeader } from "@/steps/trade-params-step/swap-header";
+import { TradeParamsFormData, tradeParamsFormSchema } from "@/steps/trade-params-step/types"
 
 interface Props {
   onComplete: (data: TradeParamsFormData) => void;
@@ -18,7 +18,7 @@ export function TradeParamsForm({ onComplete }: Props) {
   const form = useForm<z.infer<typeof tradeParamsFormSchema>>({
     resolver: zodResolver(tradeParamsFormSchema),
     defaultValues: {
-      inputTokenAmount: '',
+      inputTokenAmount: '100',
       riskLevel: 30,
       tags: [],
     },

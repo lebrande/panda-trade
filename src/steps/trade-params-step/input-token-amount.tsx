@@ -1,6 +1,6 @@
 import { FormControl, FormItem, FormMessage, FormLabel, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
-import { tradeParamsFormSchema } from "@/trade-params-step/types";
+import { tradeParamsFormSchema } from "@/steps/trade-params-step/types";
 import { numberStringSchema } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";

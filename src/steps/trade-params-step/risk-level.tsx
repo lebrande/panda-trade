@@ -3,7 +3,7 @@ import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { FormField } from "@/components/ui/form";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { tradeParamsFormSchema } from "@/trade-params-step/types";
+import { tradeParamsFormSchema } from "@/steps/trade-params-step/types";
 import { Slider } from "@/components/ui/slider";
 
 export const RiskLevel = () => {
