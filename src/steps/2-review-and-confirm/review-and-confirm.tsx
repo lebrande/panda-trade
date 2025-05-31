@@ -11,6 +11,7 @@ import { Hex } from "viem";
 import { StepTitle } from "@/components/step-title";
 import { OutputTokensChart } from "@/steps/2-review-and-confirm/output-tokens-chart";
 import { TokenList } from "@/steps/2-review-and-confirm/token-list";
+import { ExecuteTransaction } from "@/steps/2-review-and-confirm/execute-transaction";
 
 const USDC_DECIMALS = 6;
 
@@ -87,6 +88,7 @@ export const ReviewAndConfirm = ({ tradeParams, onComplete }: Props) => {
           pathVizImage={odosData.quoteResponse.pathVizImage}
         />
       </div>
+      <ExecuteTransaction odosResult={odosData} />
     </div>
   )
 }
