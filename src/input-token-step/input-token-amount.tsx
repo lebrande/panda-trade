@@ -1,9 +1,11 @@
 import { Input } from "@/components/ui/input"
-import { useState } from "react";
 
-export const InputTokenAmount = () => {
-  const [amount, setAmount] = useState('');
+interface Props {
+  amount: string;
+  setAmount: (amount: string) => void;
+}
 
+export const InputTokenAmount = ({ amount, setAmount }: Props) => {
   return (
     <div className="mb-6">
       <div className="flex items-center mb-4">
