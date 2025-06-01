@@ -1,6 +1,5 @@
 import { Step } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { CheckIcon } from "lucide-react";
 
 interface Props {
   currentStep: Step;
@@ -35,11 +34,10 @@ const StepperItem = ({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-center h-8">
-        {isCurrentStep ? (
-          <CheckIcon className="w-4 h-4 text-green-500" />
-        ) : (
-          <div className="w-2 h-2 rounded-full bg-gray-500" />
-        )}
+        <div className={cn(
+          'w-2 h-2 rounded-full',
+          isCurrentStep ? 'bg-green-500' : 'bg-gray-500'
+        )} />
       </div>
       <div className={cn(
         "text-sm text-center",
