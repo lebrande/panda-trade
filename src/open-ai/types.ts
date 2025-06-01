@@ -1,7 +1,7 @@
 import { outputTokensSchema } from '@/odos/useOdos';
 import z from 'zod';
 
-export const tagsItemSchema = z.enum([
+export const TAGS = [
   'Stablecoin',
   'Meme',
   'DeFi',
@@ -9,13 +9,11 @@ export const tagsItemSchema = z.enum([
   'Blue Chip',
   'Gaming',
   'AI',
-  'Infrastructure',
-  'DAO',
   'Low Cap',
-  'Short Term',
-  'Long Term',
   'High Liquidity',
-]);
+] as const;
+
+export const tagsItemSchema = z.enum(TAGS);
 export type Tag = z.infer<typeof tagsItemSchema>;
 export const tagsSchema = z.array(tagsItemSchema);
 

@@ -10,6 +10,7 @@ import { InputTokenAmount } from "@/steps/1-ask-panda-step/input-token-amount";
 import { SwapHeader } from "@/steps/1-ask-panda-step/swap-header";
 import { TradeParamsFormData, tradeParamsFormSchema } from "@/steps/1-ask-panda-step/types"
 import { TagsPicker } from "@/steps/1-ask-panda-step/tags-picker"
+import { StepTitle } from "@/components/step-title"
 
 interface Props {
   onComplete: (data: TradeParamsFormData) => void;
@@ -31,11 +32,16 @@ export function AskPanda({ onComplete }: Props) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form 
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="space-y-6"
+      >
         <PandaTop />
+        <StepTitle>
+          Swap
+        </StepTitle>
 
         <div className="mb-8">
-          <SwapHeader />
           <InputTokenAmount />
           <RiskLevel />
           <TagsPicker />

@@ -26,8 +26,6 @@ export const InputTokenAmount = () => {
             <span className="text-xl font-bold text-white">USDC</span>
           </div>
           <div className="text-right">
-            <div className="text-sm text-[#7c8d9c]">USDC</div>
-
             <FormField
               control={form.control}
               name="inputTokenAmount"
@@ -37,7 +35,7 @@ export const InputTokenAmount = () => {
                   <FormControl>
                     <Input
                       type="text"
-                      className="text-2xl font-bold text-white text-right"
+                      className="text-2xl! font-bold text-foreground text-right w-32"
                       onChange={(e) => {
                         const value = numberStringSchema.safeParse(e.target.value);
                         if (value.success) {
@@ -51,7 +49,6 @@ export const InputTokenAmount = () => {
                 </FormItem>
               )}
             />
-            <div className="text-sm text-[#7c8d9c]">~$2 605.13 (-0.08%)</div>
           </div>
         </div>
       </div>

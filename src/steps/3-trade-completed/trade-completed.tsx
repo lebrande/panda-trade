@@ -1,7 +1,16 @@
-export const TradeCompleted = () => {
+import { HappyPanda } from "@/steps/3-trade-completed/happy-panda";
+import { TransactionInfo } from "@/steps/3-trade-completed/transaction-info";
+import { Hex } from "viem";
+
+interface Props {
+  txHash: Hex;
+}
+
+export const TradeCompleted = ({ txHash }: Props) => {
   return (
     <div>
-      <h1>Trade Completed</h1>
+      <HappyPanda />
+      <TransactionInfo txHash={txHash} />
     </div>
   )
 }
