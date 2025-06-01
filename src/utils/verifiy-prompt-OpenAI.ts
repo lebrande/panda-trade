@@ -6,6 +6,7 @@ import {
   notarize,
 } from '@vlayer/sdk/web_proof'
 import axios from "axios";
+import proverSpec from "../OpenAIProver.sol/OpenAIProver"
 
 interface OpenAIResponse {
   content: string;
@@ -17,42 +18,58 @@ interface VerificationResult {
   error?: string;
 }
 
+const vlayer = createVlayerClient()
+
 export async function verifyOpenAIResponse(
   prompt: string
 ): Promise<VerificationResult> {
   try {
     console.log("Toż to jest test")
-    const vlayer = createVlayerClient()
-    
+
+
     const requestData = {
-      url: "https://api.openai.com/v1/chat/completions",
-      host: "127.0.0.1",
-      notary: "https://test-notary.vlayer.xyz",
-      method: "GET",
+      url: "https://api.openai.com/v1/responses",
+      notary: "https://notary.vlayer.xyz",
+      method: "POST",
       headers: [
-        "Content-Type: application/json"
+        "Content-Type: application/json",
+        `Authorization: Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
       ],
-      data: "string",
-      max_sent_data: 0,
-      max_recv_data: 0
+      data: `{"model": "gpt-4.1","input": "${prompt}"}`,
     };
 
+    console.log(requestData)
+
     const url = "https://web-proof-vercel.vercel.app/api/handler"
-    const axiosResponse = await axios.post(url, requestData, {
+    const webProofResponse = await axios.post(url, requestData, {
       headers: {
         'accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`
       }
     });
 
-    console.log(axiosResponse)
-    console.log("Toż to jest żywiec")
-    console.log('API Response:', axiosResponse.data);
+    console.log(webProofResponse)
+    const presentationData = JSON.parse(webProofResponse.data.presentation)
+    console.log("Presentation data:", presentationData)
 
+    const hash = await vlayer.prove({
+      address: '0x2d9e58c921099b71d646ba802cb613c071b97cbb',
+      proverAbi: proverSpec.abi,
+      functionName: 'main',
+      args: [{
+        webProofJson: webProofResponse.data.presentation
+      }],
+      chainId: 8453,
+    });
+
+    console.log("Prove hash:", hash)
+    const result = await vlayer.waitForProvingResult({ hash });
+    console.log(result)
     return {
       isValid: true,
       response: {
-        content: JSON.stringify(axiosResponse.data)
+        content: JSON.stringify(result)
       }
     };
 
