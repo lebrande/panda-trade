@@ -25,7 +25,7 @@ const CurrentStep = () => {
     return (
       <div className="space-y-4">
         <Stepper currentStep="3-trade-completed" />
-        <TradeCompleted />
+        <TradeCompleted txHash={tradeTxHash} />
       </div>
     )
   }
